@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/transaction_model.dart';
+import '../models/user_model.dart';
 import '../networking/add_transaction.dart';
+import '../networking/fetch_user.dart';
 import '../store/user_data.dart';
 
 class AddTransactionScreen extends StatefulWidget {
@@ -49,10 +51,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               decoration: const InputDecoration(
                 hintText: "Enter your amount",
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(width: 1, color: Color(0xFFEB1555)),
+                  borderSide: BorderSide(
+                    width: 1,
+                    color: Color(0xFFEB1555),
+                  ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(width: 1, color: Color(0xFFEB1555)),
+                  borderSide: BorderSide(
+                    width: 1,
+                    color: Color(0xFFEB1555),
+                  ),
                 ),
               ),
               autofocus: true,
@@ -97,6 +105,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               onPressed: () async {
                 final transactionSlice =
                     Provider.of<TransactionsData>(context, listen: false);
+                final userSlice = Provider.of<UserData>(context, listen: false);
 
                 final navigator = Navigator.of(context);
 
@@ -110,6 +119,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 );
 
                 transactionSlice.addTransaction(newTransaction);
+
+                if (newTransaction.status != "cancelled") {
+                  User user = await fetchUser(uuid: userSlice.uuid!);
+                  userSlice.setUserData(user);
+                }
 
                 navigator.pop();
               },

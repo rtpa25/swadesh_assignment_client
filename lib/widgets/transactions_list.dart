@@ -29,13 +29,12 @@ class TransactionsList extends StatelessWidget {
         updateTransactionLoadingFlag(false);
       },
       child: ListView.builder(
-        itemCount: Provider.of<TransactionsData>(context, listen: false)
-            .transactions
-            .length,
+        itemCount: Provider.of<TransactionsData>(context).transactions.length,
         itemBuilder: (context, index) {
           return TransactionTile(
-              transaction: Provider.of<TransactionsData>(context, listen: false)
-                  .transactions[index]);
+            transaction:
+                Provider.of<TransactionsData>(context).transactions[index],
+          );
         },
       ),
     );

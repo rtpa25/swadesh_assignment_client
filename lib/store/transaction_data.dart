@@ -14,7 +14,7 @@ class TransactionsData extends ChangeNotifier {
   }
 
   void addTransaction(Transaction transaction) {
-    _transactions.add(transaction);
+    _transactions = [transaction, ..._transactions];
     notifyListeners();
   }
 }
