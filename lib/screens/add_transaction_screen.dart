@@ -20,6 +20,55 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   String transactionAmount = "";
 
+  final _text = TextEditingController();
+  bool _validate = false;
+
+  @override
+  void dispose() {
+    _text.dispose();
+    super.dispose();
+  }
+
+  Future<void> addTransactionHandler() async {
+    final transactionSlice =
+        Provider.of<TransactionsData>(context, listen: false);
+    final userSlice = Provider.of<UserData>(context, listen: false);
+
+    final navigator = Navigator.of(context);
+
+    String? userId = Provider.of<UserData>(context, listen: false).id;
+
+    Transaction newTransaction = await createTransactionOnServer(
+      userId: userId!,
+      transactionAmount: transactionAmount,
+      transactionType: transactionType,
+    );
+
+    transactionSlice.addTransaction(newTransaction);
+
+    if (newTransaction.status != "cancelled") {
+      User user = await fetchUser(uuid: userSlice.uuid!);
+      userSlice.setUserData(user);
+    }
+
+    navigator.pop();
+  }
+
+  void handleInputStateChange(String value) {
+    setState(() {
+      if (value.isEmpty) {
+        _validate = true;
+      } else if (double.parse(value) < 0) {
+        _validate = true;
+      } else if (double.parse(value) > 10000) {
+        _validate = true;
+      } else {
+        _validate = false;
+      }
+      transactionAmount = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,15 +97,17 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               height: 20.0,
             ),
             TextField(
-              decoration: const InputDecoration(
+              controller: _text,
+              decoration: InputDecoration(
+                errorText: _validate ? 'invalid value' : null,
                 hintText: "Enter your amount",
-                enabledBorder: OutlineInputBorder(
+                enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
                     width: 1,
                     color: Color(0xFFEB1555),
                   ),
                 ),
-                focusedBorder: OutlineInputBorder(
+                focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
                     width: 1,
                     color: Color(0xFFEB1555),
@@ -67,11 +118,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               autocorrect: true,
-              onChanged: (value) {
-                setState(() {
-                  transactionAmount = value;
-                });
-              },
+              onChanged: handleInputStateChange,
             ),
             const SizedBox(
               height: 20.0,
@@ -101,39 +148,17 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             const SizedBox(
               height: 20.0,
             ),
-            TextButton(
-              onPressed: () async {
-                final transactionSlice =
-                    Provider.of<TransactionsData>(context, listen: false);
-                final userSlice = Provider.of<UserData>(context, listen: false);
-
-                final navigator = Navigator.of(context);
-
-                String? userId =
-                    Provider.of<UserData>(context, listen: false).id;
-
-                Transaction newTransaction = await createTransactionOnServer(
-                  userId: userId!,
-                  transactionAmount: transactionAmount,
-                  transactionType: transactionType,
-                );
-
-                transactionSlice.addTransaction(newTransaction);
-
-                if (newTransaction.status != "cancelled") {
-                  User user = await fetchUser(uuid: userSlice.uuid!);
-                  userSlice.setUserData(user);
-                }
-
-                navigator.pop();
-              },
+            ElevatedButton(
+              onPressed: addTransactionHandler,
               style: TextButton.styleFrom(
-                  backgroundColor: const Color(0xFFEB1555),
-                  padding: const EdgeInsets.all(20)),
+                backgroundColor: const Color(0xFFEB1555),
+                padding: const EdgeInsets.all(20),
+              ),
               child: const Text(
                 "Add",
                 style: TextStyle(
                   color: Colors.white,
+                  fontSize: 20,
                 ),
               ),
             ),
