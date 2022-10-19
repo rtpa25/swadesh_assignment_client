@@ -7,6 +7,7 @@ import '../models/user_model.dart';
 import '../networking/add_transaction.dart';
 import '../networking/fetch_user.dart';
 import '../store/user_data.dart';
+import '../utils/constants.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
@@ -22,6 +23,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   final _text = TextEditingController();
   bool _validate = false;
+  String errorString = "";
 
   @override
   void dispose() {
@@ -58,10 +60,18 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     setState(() {
       if (value.isEmpty) {
         _validate = true;
+        errorString = formErrors["invalidAmount"]!;
       } else if (double.parse(value) < 0) {
         _validate = true;
+        errorString = formErrors["invalidAmount"]!;
       } else if (double.parse(value) > 10000) {
         _validate = true;
+        errorString = formErrors["gteTenK"]!;
+      } else if (double.parse(value) >
+              Provider.of<UserData>(context, listen: false).balance! &&
+          transactionType == "debit") {
+        _validate = true;
+        errorString = formErrors["insufficientBalance"]!;
       } else {
         _validate = false;
       }
@@ -99,7 +109,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             TextField(
               controller: _text,
               decoration: InputDecoration(
-                errorText: _validate ? 'invalid value' : null,
+                errorText: _validate ? errorString : null,
                 hintText: "Enter your amount",
                 enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
