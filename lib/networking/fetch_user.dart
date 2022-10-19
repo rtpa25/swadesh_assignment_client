@@ -8,11 +8,15 @@ import '../utils/constants.dart';
 Future<User> fetchUser({
   required String uuid,
 }) async {
-  var res = await http.get(Uri.parse("$baseUrl/api/users?uuid=$uuid"));
-  User user = User(
-    balance: jsonDecode(res.body)["balance"].toDouble(),
-    id: jsonDecode(res.body)["_id"],
-    uuid: uuid,
-  );
-  return user;
+  try {
+    var res = await http.get(Uri.parse("$baseUrl/api/users?uuid=$uuid"));
+    User user = User(
+      balance: jsonDecode(res.body)["balance"].toDouble(),
+      id: jsonDecode(res.body)["_id"],
+      uuid: uuid,
+    );
+    return user;
+  } catch (e) {
+    rethrow;
+  }
 }
