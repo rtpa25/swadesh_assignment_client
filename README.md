@@ -1,16 +1,15 @@
-# client
+# Swadesh Assignment v1.0
 
-A new Flutter project.
+The Flutter app of the Assignment.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- user gets automatically created on first launch
+- UUID is persisted with cache. 
+- Add transaction with all given validations and constraints.
+- Swipe down to reload the List of transactions to see the latest transaction status.
+  
+## Local Setup
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+    flutter pub get
+    flutter run
