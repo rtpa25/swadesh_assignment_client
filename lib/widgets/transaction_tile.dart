@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:client/models/transaction_model.dart';
+import 'package:client/networking/delete_transaction.dart';
 import 'package:client/store/transaction_data.dart';
 import 'package:client/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -19,13 +20,7 @@ class TransactionTile extends StatelessWidget {
     var transactionsSlice =
         Provider.of<TransactionsData>(context, listen: false);
 
-    await http.delete(
-      Uri.parse("$baseUrl/api/transactions"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{"id": transaction.id}),
-    );
+    await deleteTransactionOnServer(id: transaction.id);
 
     transactionsSlice.deleteTransaction(transaction.id);
     navigator.pop();
