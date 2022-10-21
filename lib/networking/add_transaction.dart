@@ -27,6 +27,7 @@ Future<Transaction> createTransactionOnServer({
       type: jsonDecode(res.body)["type"],
       createdAt: DateTime.parse(jsonDecode(res.body)["createdAt"]),
       status: jsonDecode(res.body)["status"],
+      id: jsonDecode(res.body)["_id"],
     );
     return newTransaction;
   } catch (e) {

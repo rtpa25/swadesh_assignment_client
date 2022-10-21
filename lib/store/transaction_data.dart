@@ -17,4 +17,9 @@ class TransactionsData extends ChangeNotifier {
     _transactions = [transaction, ..._transactions];
     notifyListeners();
   }
+
+  void deleteTransaction(String id) {
+    _transactions.removeWhere((transaction) => transaction.id == id);
+    notifyListeners();
+  }
 }

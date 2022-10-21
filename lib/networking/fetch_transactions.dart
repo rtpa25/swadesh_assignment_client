@@ -18,6 +18,7 @@ Future<List<Transaction>> fetchTransactions({required String userId}) async {
               type: transaction["type"],
               createdAt: DateTime.parse(transaction["createdAt"]),
               status: transaction["status"],
+              id: transaction["_id"],
             ))
         .toList();
 
