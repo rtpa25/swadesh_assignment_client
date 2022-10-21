@@ -25,7 +25,8 @@ class TransactionsScreen extends StatefulWidget {
 }
 
 class _TransactionsScreenState extends State<TransactionsScreen> {
-  final storage = LocalStorage('my_data.json');
+  final storage =
+      LocalStorage('my_data.json'); //local storage used to store uuid
 
   bool transactionIsLoading = false;
 
@@ -95,7 +96,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         children: <Widget>[
           Container(
             padding: const EdgeInsets.only(
-              top: 60.0,
+              top: 60,
               left: 30.0,
               right: 30.0,
               bottom: 30.0,
@@ -175,7 +176,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             builder: (context) => SingleChildScrollView(
               child: Container(
                 padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                  bottom: MediaQuery.of(context)
+                      .viewInsets
+                      .bottom, //ui sits on top of keyboard
                 ),
                 child: const AddTransactionScreen(),
               ),
