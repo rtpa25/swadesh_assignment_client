@@ -29,6 +29,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       LocalStorage('my_data.json'); //local storage used to store uuid
 
   bool transactionIsLoading = false;
+  String sortingCriteria = "Sort by amount H-L";
+  String filterCriteria = "all";
 
   void updateTransactionsIsLoading(bool value) {
     setState(() {
@@ -44,9 +46,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       dynamic localUuid = storage.getItem("uuid");
 
       final userSlice = Provider.of<UserData>(context, listen: false);
-
-      final transactionSlice =
-          Provider.of<TransactionsData>(context, listen: false);
 
       //create a user if no user exists for the specific instance of the app
       if (localUuid == null) {
@@ -69,15 +68,29 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           rethrow;
         }
       }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    void fetchTransactionsSideEffect() async {
+      final userSlice = Provider.of<UserData>(context, listen: false);
+
+      final transactionSlice =
+          Provider.of<TransactionsData>(context, listen: false);
 
       //fetch transactions for the user
       try {
         String? userId = userSlice.id;
 
         updateTransactionsIsLoading(true);
-
-        List<Transaction> transactions =
-            await fetchTransactions(userId: userId!);
+        setState(() {});
+        List<Transaction> transactions = await fetchTransactions(
+          userId: userId!,
+          filter: filterCriteria,
+          sort: sortingCriteria,
+        );
 
         transactionSlice.setTransactions(transactions);
 
@@ -85,7 +98,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       } catch (e) {
         rethrow;
       }
-    });
+    }
+
+    fetchTransactionsSideEffect();
   }
 
   @override
@@ -144,6 +159,69 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     ),
                   ),
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    DropdownButton(
+                      value: sortingCriteria,
+                      style: const TextStyle(
+                        color: Color(0xFFEB1555),
+                        fontSize: 18,
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                          value: "Sort by amount H-L",
+                          child: Text("Sort by amount H-L"),
+                        ),
+                        DropdownMenuItem(
+                          value: "Sort by amount L-H",
+                          child: Text("Sort by amount L-H"),
+                        ),
+                        DropdownMenuItem(
+                          value: "Sort by date L-H",
+                          child: Text("Sort by date L-H"),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          sortingCriteria = value.toString();
+                          didChangeDependencies();
+                        });
+                      },
+                    ),
+                    DropdownButton(
+                      value: filterCriteria,
+                      style: const TextStyle(
+                        // color: Color(0xFFEB1555),
+                        fontSize: 18,
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                          value: "credit",
+                          child: Text("Credit"),
+                        ),
+                        DropdownMenuItem(
+                          value: "debit",
+                          child: Text("Debit"),
+                        ),
+                        DropdownMenuItem(
+                          value: "transfer",
+                          child: Text("Transfer"),
+                        ),
+                        DropdownMenuItem(
+                          value: "all",
+                          child: Text("All"),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          filterCriteria = value.toString();
+                          didChangeDependencies();
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -163,6 +241,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   ? const LoadingIndicator()
                   : TransactionsList(
                       updateTransactionLoadingFlag: updateTransactionsIsLoading,
+                      filterCriteria: filterCriteria,
+                      sortingCriteria: sortingCriteria,
                     ),
             ),
           )
