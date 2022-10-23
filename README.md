@@ -7,6 +7,7 @@ The Flutter app of the Assignment.
 - user gets automatically created on first launch
 - UUID is persisted with cache.
 - Add transaction with all given validations and constraints.
+- Credit money from admin, Debit money to admin & Transfer money to other users.
 - Swipe down to reload the List of transactions to see the latest transaction status.
   
 ## Local Setup

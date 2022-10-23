@@ -6,21 +6,42 @@ import 'package:http/http.dart' as http;
 import '../utils/constants.dart';
 
 Future<Transaction> createTransactionOnServer({
-  required String userId,
+  String? senderId,
+  String? receiverId,
   required String transactionAmount,
   required String transactionType,
 }) async {
   try {
-    var res = await http.post(Uri.parse("$baseUrl/api/transactions"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'amount': transactionAmount,
-          'type': transactionType,
-          'user': userId,
-          'status': "created",
-        }));
+    Map<String, String> body = {
+      "amount": transactionAmount,
+      "type": transactionType,
+    };
+
+    if (senderId != null && receiverId != null) {
+      body = {
+        "sender": senderId,
+        "receiver": receiverId,
+        ...body,
+      };
+    } else if (senderId != null && receiverId == null) {
+      body = {
+        "sender": senderId,
+        ...body,
+      };
+    } else if (senderId == null && receiverId != null) {
+      body = {
+        "receiver": receiverId,
+        ...body,
+      };
+    }
+
+    var res = await http.post(
+      Uri.parse("$baseUrl/api/transactions"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(body),
+    );
 
     Transaction newTransaction = Transaction(
       amount: jsonDecode(res.body)["amount"].toDouble(),
@@ -28,6 +49,8 @@ Future<Transaction> createTransactionOnServer({
       createdAt: DateTime.parse(jsonDecode(res.body)["createdAt"]),
       status: jsonDecode(res.body)["status"],
       id: jsonDecode(res.body)["_id"],
+      receiverId: jsonDecode(res.body)["receiver"],
+      senderId: jsonDecode(res.body)["sender"],
     );
     return newTransaction;
   } catch (e) {

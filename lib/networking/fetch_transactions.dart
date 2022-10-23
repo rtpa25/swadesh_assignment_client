@@ -19,6 +19,8 @@ Future<List<Transaction>> fetchTransactions({required String userId}) async {
               createdAt: DateTime.parse(transaction["createdAt"]),
               status: transaction["status"],
               id: transaction["_id"],
+              receiverId: transaction["receiver"],
+              senderId: transaction["sender"],
             ))
         .toList();
 

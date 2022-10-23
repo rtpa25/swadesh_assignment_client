@@ -24,6 +24,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _text = TextEditingController();
   bool _validate = false;
   String errorString = "";
+  bool isTransfer = false;
+  String receiverId = "";
 
   @override
   void dispose() {
@@ -40,11 +42,27 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
     String? userId = Provider.of<UserData>(context, listen: false).id;
 
-    Transaction newTransaction = await createTransactionOnServer(
-      userId: userId!,
-      transactionAmount: transactionAmount,
-      transactionType: transactionType,
-    );
+    Transaction newTransaction;
+
+    if (transactionType == "transfer") {
+      newTransaction = await createTransactionOnServer(
+          transactionAmount: transactionAmount,
+          transactionType: transactionType,
+          receiverId: receiverId,
+          senderId: userId);
+    } else if (transactionType == "credit") {
+      newTransaction = await createTransactionOnServer(
+        transactionAmount: transactionAmount,
+        transactionType: transactionType,
+        receiverId: userId,
+      );
+    } else {
+      newTransaction = await createTransactionOnServer(
+        transactionAmount: transactionAmount,
+        transactionType: transactionType,
+        senderId: userId,
+      );
+    }
 
     transactionSlice.addTransaction(newTransaction);
 
@@ -56,7 +74,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     navigator.pop();
   }
 
-  void handleInputStateChange(String value) {
+  void handleAmountStateChange(String value) {
     setState(() {
       if (value.isEmpty) {
         _validate = true;
@@ -106,6 +124,40 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             const SizedBox(
               height: 20.0,
             ),
+            DropdownButton(
+              value: transactionType,
+              style: const TextStyle(
+                color: Color(0xFFEB1555),
+                fontSize: 18,
+              ),
+              items: const [
+                DropdownMenuItem(
+                  value: "credit",
+                  child: Text("credit"),
+                ),
+                DropdownMenuItem(
+                  value: "debit",
+                  child: Text("debit"),
+                ),
+                DropdownMenuItem(
+                  value: "transfer",
+                  child: Text("transfer"),
+                ),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  transactionType = value!;
+                  if (value == "transfer") {
+                    isTransfer = true;
+                  } else {
+                    isTransfer = false;
+                  }
+                });
+              },
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
             TextField(
               controller: _text,
               decoration: InputDecoration(
@@ -128,33 +180,42 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               autocorrect: true,
-              onChanged: handleInputStateChange,
+              onChanged: handleAmountStateChange,
             ),
             const SizedBox(
               height: 20.0,
             ),
-            DropdownButton(
-              value: transactionType,
-              style: const TextStyle(
-                color: Color(0xFFEB1555),
-                fontSize: 18,
-              ),
-              items: const [
-                DropdownMenuItem(
-                  value: "credit",
-                  child: Text("credit"),
-                ),
-                DropdownMenuItem(
-                  value: "debit",
-                  child: Text("debit"),
-                ),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  transactionType = value!;
-                });
-              },
-            ),
+            (isTransfer
+                ? TextField(
+                    decoration: const InputDecoration(
+                      hintText: "Enter receiver's Id",
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: Color(0xFFEB1555),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: Color(0xFFEB1555),
+                        ),
+                      ),
+                    ),
+                    autofocus: true,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.text,
+                    autocorrect: true,
+                    onChanged: (value) {
+                      setState(() {
+                        receiverId = value;
+                      });
+                    },
+                  )
+                : const SizedBox(
+                    height: 0,
+                    width: 0,
+                  )),
             const SizedBox(
               height: 20.0,
             ),

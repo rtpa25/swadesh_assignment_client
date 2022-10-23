@@ -4,6 +4,8 @@ class Transaction {
   DateTime createdAt;
   String status;
   String id;
+  String senderId;
+  String receiverId;
 
   Transaction({
     required this.id,
@@ -11,5 +13,7 @@ class Transaction {
     required this.type,
     required this.createdAt,
     required this.status,
+    required this.senderId,
+    required this.receiverId,
   });
 }
