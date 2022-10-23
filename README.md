@@ -8,6 +8,7 @@ The Flutter app of the Assignment.
 - UUID is persisted with cache.
 - Add transaction with all given validations and constraints.
 - Credit money from admin, Debit money to admin & Transfer money to other users.
+- Sort and Filter transactions by date, amount, type.
 - Swipe down to reload the List of transactions to see the latest transaction status.
   
 ## Local Setup
