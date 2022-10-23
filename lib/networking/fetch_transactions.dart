@@ -5,10 +5,27 @@ import 'package:http/http.dart' as http;
 
 import '../utils/constants.dart';
 
-Future<List<Transaction>> fetchTransactions({required String userId}) async {
+Future<List<Transaction>> fetchTransactions({
+  required String userId,
+  String? sort,
+  String? filter,
+}) async {
   try {
-    var res =
-        await http.get(Uri.parse("$baseUrl/api/transactions?userId=$userId"));
+    http.Response res;
+
+    if (sort != null && filter == null) {
+      res = await http.get(
+          Uri.parse("$baseUrl/api/transactions?userId=$userId&sort=$sort"));
+    } else if (filter != null && sort == null) {
+      res = await http.get(
+          Uri.parse("$baseUrl/api/transactions?userId=$userId&filter=$filter"));
+    } else if (filter != null && sort != null) {
+      res = await http.get(Uri.parse(
+          "$baseUrl/api/transactions?userId=$userId&sort=$sort&filter=$filter"));
+    } else {
+      res =
+          await http.get(Uri.parse("$baseUrl/api/transactions?userId=$userId"));
+    }
 
     var fetchedTransactions = jsonDecode(res.body);
 

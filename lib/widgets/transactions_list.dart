@@ -9,8 +9,14 @@ import 'transaction_tile.dart';
 
 class TransactionsList extends StatelessWidget {
   final Function updateTransactionLoadingFlag;
-  const TransactionsList({Key? key, required this.updateTransactionLoadingFlag})
-      : super(key: key);
+  final String sortingCriteria;
+  final String filterCriteria;
+  const TransactionsList({
+    Key? key,
+    required this.updateTransactionLoadingFlag,
+    required this.sortingCriteria,
+    required this.filterCriteria,
+  }) : super(key: key);
 
   Future<void> refreshTransactionsListHandler(BuildContext context) async {
     final String? userId = Provider.of<UserData>(context, listen: false).id;
@@ -19,7 +25,11 @@ class TransactionsList extends StatelessWidget {
 
     updateTransactionLoadingFlag(true);
 
-    List<Transaction> transactions = await fetchTransactions(userId: userId!);
+    List<Transaction> transactions = await fetchTransactions(
+      userId: userId!,
+      filter: filterCriteria,
+      sort: sortingCriteria,
+    );
 
     transactionsSlice.setTransactions(transactions);
     updateTransactionLoadingFlag(false);
@@ -43,7 +53,9 @@ class TransactionsList extends StatelessWidget {
               },
             )
           : const Center(
-              child: Text('Hit the plus button to add a transaction'),
+              child: Text(
+                'Hit the plus button to add a transaction',
+              ),
             ),
     );
   }
