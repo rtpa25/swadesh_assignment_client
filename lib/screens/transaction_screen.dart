@@ -74,18 +74,18 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     void fetchTransactionsSideEffect() async {
       final userSlice = Provider.of<UserData>(context, listen: false);
 
       final transactionSlice =
           Provider.of<TransactionsData>(context, listen: false);
+
       //fetch transactions for the user
       try {
         String? userId = userSlice.id;
 
         updateTransactionsIsLoading(true);
-
+        setState(() {});
         List<Transaction> transactions = await fetchTransactions(
           userId: userId!,
           filter: filterCriteria,
@@ -185,6 +185,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       onChanged: (value) {
                         setState(() {
                           sortingCriteria = value.toString();
+                          didChangeDependencies();
                         });
                       },
                     ),
@@ -215,6 +216,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       onChanged: (value) {
                         setState(() {
                           filterCriteria = value.toString();
+                          didChangeDependencies();
                         });
                       },
                     ),
