@@ -84,17 +84,16 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       try {
         String? userId = userSlice.id;
 
-        updateTransactionsIsLoading(true);
-        setState(() {});
-        List<Transaction> transactions = await fetchTransactions(
-          userId: userId!,
-          filter: filterCriteria,
-          sort: sortingCriteria,
-        );
-
-        transactionSlice.setTransactions(transactions);
-
-        updateTransactionsIsLoading(false);
+        if (userId != null) {
+          updateTransactionsIsLoading(true);
+          List<Transaction> transactions = await fetchTransactions(
+            userId: userId,
+            filter: filterCriteria,
+            sort: sortingCriteria,
+          );
+          transactionSlice.setTransactions(transactions);
+          updateTransactionsIsLoading(false);
+        }
       } catch (e) {
         rethrow;
       }
