@@ -1,6 +1,4 @@
 import 'package:client/models/transaction_model.dart';
-import 'package:client/networking/delete_transaction.dart';
-import 'package:client/store/transaction_data.dart';
 import 'package:client/store/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,17 +10,6 @@ class TransactionTile extends StatelessWidget {
   final Transaction transaction;
 
   const TransactionTile({super.key, required this.transaction});
-
-  void deleteTransactionHandler(BuildContext context) async {
-    var navigator = Navigator.of(context);
-    var transactionsSlice =
-        Provider.of<TransactionsData>(context, listen: false);
-
-    await deleteTransactionOnServer(id: transaction.id);
-
-    transactionsSlice.deleteTransaction(transaction.id);
-    navigator.pop();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +28,6 @@ class TransactionTile extends StatelessWidget {
           builder: (context) {
             return TransactionDetailsAlertBox(
               transaction: transaction,
-              deleteTransactionHandler: deleteTransactionHandler,
             );
           },
         );

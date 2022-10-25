@@ -1,16 +1,29 @@
 import 'package:client/models/transaction_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../networking/delete_transaction.dart';
+import '../store/transaction_data.dart';
 import '../utils/date_to_text.dart';
 
 class TransactionDetailsAlertBox extends StatelessWidget {
   final Transaction transaction;
-  final Function(BuildContext context) deleteTransactionHandler;
 
-  const TransactionDetailsAlertBox(
-      {super.key,
-      required this.transaction,
-      required this.deleteTransactionHandler});
+  const TransactionDetailsAlertBox({
+    super.key,
+    required this.transaction,
+  });
+
+  void deleteTransactionHandler(BuildContext context) async {
+    var navigator = Navigator.of(context);
+    var transactionsSlice =
+        Provider.of<TransactionsData>(context, listen: false);
+
+    await deleteTransactionOnServer(id: transaction.id);
+
+    transactionsSlice.deleteTransaction(transaction.id);
+    navigator.pop();
+  }
 
   @override
   Widget build(BuildContext context) {
