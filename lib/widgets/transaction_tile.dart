@@ -1,6 +1,7 @@
 import 'package:client/models/transaction_model.dart';
 import 'package:client/networking/delete_transaction.dart';
 import 'package:client/store/transaction_data.dart';
+import 'package:client/store/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +25,14 @@ class TransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color transactionAmountColor = transaction.type == "debit"
+        ? Colors.red
+        : (transaction.type == "credit"
+            ? Colors.green
+            : (transaction.senderId == Provider.of<UserData>(context).id
+                ? Colors.red
+                : Colors.green));
+
     return ListTile(
       onLongPress: () {
         showDialog(
@@ -80,9 +89,9 @@ class TransactionTile extends StatelessWidget {
       },
       leading: Text(
         "\$${transaction.amount}",
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 18.0,
-          color: Color(0xFFEB1555),
+          color: transactionAmountColor,
         ),
       ),
       title: Row(
