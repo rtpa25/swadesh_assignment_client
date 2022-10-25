@@ -180,6 +180,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                           value: "Sort by date L-H",
                           child: Text("Sort by date L-H"),
                         ),
+                        DropdownMenuItem(
+                          value: "Sort by date H-L",
+                          child: Text("Sort by date H-L"),
+                        ),
                       ],
                       onChanged: (value) {
                         setState(() {
